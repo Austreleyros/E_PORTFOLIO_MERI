@@ -15,7 +15,7 @@
 
 html {
     scroll-behavior: smooth;
-    overflow-x: hidden; /* Prevents horizontal scrolling */
+    overflow-x: hidden; 
 }
 
 body {
@@ -164,7 +164,7 @@ body {
 }
 .about-nav a {
     text-decoration: none; color: var(--text-dark); font-weight: 600;
-    font-size: 0.9rem; text-transform: lowercase; padding: 8px 15px;
+    font-size: 0.9rem; text-transform: uppercase; padding: 8px 15px;
     border-radius: 25px; background-color: transparent; transition: all 0.3s ease;
     white-space: nowrap;
 }
@@ -234,10 +234,9 @@ body {
    MOBILE RESPONSIVE OPTIMIZATIONS (FIXED)
 ========================================= */
 
-/* Tablets / Small Desktops */
 @media (max-width: 1200px) {
     body {
-        display: block; /* The crucial fix: this stops the side-by-side flex layout on mobile */
+        display: block; 
     }
     .main-content { 
         margin-right: 0; 
@@ -254,7 +253,6 @@ body {
     }
 }
 
-/* Medium Tablets / Large Phones */
 @media (max-width: 900px) {
     .main-content { margin-left: 0; padding: 30px 20px 80px; }
     .sidebar { transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
@@ -265,7 +263,6 @@ body {
     .about-header h1 { font-size: 3rem; }
 }
 
-/* Small Phones */
 @media (max-width: 600px) {
     .menu-toggle { top: 15px; left: 15px; width: 40px; height: 40px; padding: 8px; }
     
