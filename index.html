@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Me - Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Toggle Button with Reliable SVG Hamburger Icon -->
+    <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- Left Sidebar Area -->
+    <div class="sidebar" id="sidebar">
+        <img src="https://via.placeholder.com/150/ffb6c1/ffffff?text=Photo" alt="Profile" class="profile-img">
+        <h2>Default Name</h2>
+        <div class="role">Default Title / Role</div>
+        <div class="divider"></div>
+        <div class="skill-bar">
+            <div class="skill-name"><span>Skill One</span><span>90%</span></div>
+            <div class="progress"><div class="progress-fill" style="width: 90%;"></div></div>
+        </div>
+        <div class="skill-bar">
+            <div class="skill-name"><span>Skill Two</span><span>75%</span></div>
+            <div class="progress"><div class="progress-fill" style="width: 75%;"></div></div>
+        </div>
+        <div class="skill-bar">
+            <div class="skill-name"><span>Skill Three</span><span>85%</span></div>
+            <div class="progress"><div class="progress-fill" style="width: 85%;"></div></div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content" id="main-content">
+        
+        <div class="about-header">
+            <h1>Default Name</h1>
+            <p>role 1 - role 2 - role 3 - role 4</p>
+        </div>
+
+        <!-- Sticky Navigation -->
+        <div class="about-nav" id="nav-menu">
+            <a href="#about-me" class="nav-link active">about me</a>
+            <a href="#application-letter" class="nav-link">application letter</a>
+            <a href="#resume" class="nav-link">resume</a>
+            <a href="#achievements" class="nav-link">achievements</a>
+            <a href="#experience" class="nav-link">experience</a>
+        </div>
+
+        <!-- Content Sections -->
+        <div class="sections-container">
+            
+            <!-- About Me Section -->
+            <section id="about-me" class="content-section">
+                <div class="about-body">
+                    <div class="about-image">
+                        <img src="https://via.placeholder.com/400x500/ffb6c1/ffffff?text=Portrait" alt="About Me">
+                    </div>
+                    <div class="about-text">
+                        <p class="intro">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                        <p>Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Application Letter Section -->
+            <section id="application-letter" class="content-section">
+                <h2 class="section-title">Application Letter</h2>
+                <div class="letter-container">
+                    <div class="letter-header">
+                        <p><strong>Date:</strong> [Current Date]</p>
+                        <p><strong>To:</strong> Hiring Manager<br>Default Company Name<br>123 Business Rd, City</p>
+                    </div>
+                    <div class="letter-body">
+                        <p>Dear Hiring Manager,</p>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula. Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor. Suspendisse dictum feugiat nisl ut dapibus.</p>
+                        <p>Mauris iaculis porttitor posuere. Praesent id metus massa, ut blandit odio. Proin quis tortor orci. Etiam at risus et justo dignissim congue. Donec congue lacinia dui, a porttitor lectus condimentum laoreet. Nunc eu ullamcorper orci. Quisque eget odio ac lectus vestibulum faucibus eget in metus.</p>
+                        <p>Sincerely,</p>
+                        <img src="https://via.placeholder.com/150x50/ffb6c1/ffffff?text=Signature" alt="Signature" class="signature-img">
+                        <p><strong>Default Name</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resume Section -->
+            <section id="resume" class="content-section">
+                <h2 class="section-title">Resume Overview</h2>
+                <div class="resume-summary">
+                    <p class="resume-intro">A brief overview of my educational background and core competencies. Download the full document for a complete history.</p>
+                    <div class="education-block">
+                        <h3>Education</h3>
+                        <div class="resume-item">
+                            <div class="resume-year">2020 - 2024</div>
+                            <div class="resume-details">
+                                <h4>Bachelor of Science / Arts</h4>
+                                <p>Default University Name</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">Download Full CV</button>
+                </div>
+            </section>
+
+            <!-- Achievements Section -->
+            <section id="achievements" class="content-section">
+                <h2 class="section-title">Achievements</h2>
+                <div class="achievements-grid">
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <h3>Award Name One</h3>
+                        <p>Recognized for outstanding performance in project development and execution.</p>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏅</div>
+                        <h3>Certification Alpha</h3>
+                        <p>Completed advanced training program in industry-standard technologies.</p>
+                    </div>
+                    <div class="achievement-card">
+                        <div class="achievement-icon">⭐</div>
+                        <h3>Top Performer</h3>
+                        <p>Awarded for maintaining the highest client satisfaction rating.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Experience Section -->
+            <section id="experience" class="content-section">
+                <h2 class="section-title">Experience</h2>
+                <div class="timeline-list">
+                    <div class="timeline-item">
+                        <div class="timeline-year">2021 - Present</div>
+                        <div class="timeline-details">
+                            <h4>Current Job Title</h4>
+                            <p>Company Alpha</p>
+                            <ul>
+                                <li>Led the design and implementation of core features.</li>
+                                <li>Collaborated with cross-functional teams to deliver on time.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-year">2018 - 2021</div>
+                        <div class="timeline-details">
+                            <h4>Previous Job Title</h4>
+                            <p>Company Beta</p>
+                            <ul>
+                                <li>Assisted in the optimization of existing workflows.</li>
+                                <li>Managed day-to-day operations and client communications.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Right Panel Area (New Design) -->
+    <div class="right-panel">
+        <div class="panel-content">
+            <h3>Quick Status</h3>
+            <div class="status-badge">Available for Work</div>
+            
+            <h3 style="margin-top: 40px;">Featured Highlight</h3>
+            <div class="highlight-box">
+                <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Excellence is not an act, but a habit."</p>
+            </div>
+            
+            <h3 style="margin-top: 40px;">Let's Connect</h3>
+            <div class="social-links-panel">
+                <a href="#">LinkedIn</a>
+                <a href="#">GitHub</a>
+                <a href="#">Email</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
