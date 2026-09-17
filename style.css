@@ -84,7 +84,7 @@ body {
 .skill-bar { margin: 15px 0; }
 .skill-name { font-size: 0.85rem; display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 600; }
 .progress { background: #ffe6eb; height: 6px; border-radius: 3px; }
-.progress-fill { background: var(--main-red); height: 100%; border-radius: 3px; 
+.progress-fill { background: var(--main-red); height: 100%; border-radius: 3px; }
 
 /* Sidebar Social Icons */
 .sidebar-socials {
