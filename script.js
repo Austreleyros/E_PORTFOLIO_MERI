@@ -32,4 +32,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     });
+
+    // 3. Smooth Scroll Reveal Animation
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
+
+    sections.forEach(section => {
+        section.classList.add('scroll-reveal');
+        revealObserver.observe(section);
+    });
 });
