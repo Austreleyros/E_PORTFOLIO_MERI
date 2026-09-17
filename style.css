@@ -15,7 +15,7 @@
 
 html {
     scroll-behavior: smooth;
-    overflow-x: clip; /* Changed from hidden to clip */
+    overflow-x: clip; 
 }
 
 body {
@@ -25,7 +25,7 @@ body {
     color: var(--text-dark);
     display: flex;
     min-height: 100vh;
-    overflow-x: clip; /* Changed from hidden to clip */
+    overflow-x: clip;
 }
 
 /* --- Hamburger Menu Button --- */
@@ -172,7 +172,6 @@ body {
 .about-header p { color: var(--text-gray); font-size: 0.9rem; letter-spacing: 3px; text-transform: lowercase; margin-top: 10px; font-weight: 600; }
 
 /* Sticky Nav */
-/* Sticky Nav */
 .about-nav {
     display: flex;
     gap: 15px;
@@ -221,7 +220,6 @@ body {
 .letter-header { margin-bottom: 40px; color: var(--text-dark); font-size: 0.95rem; line-height: 1.6; }
 .letter-body { color: var(--text-gray); font-size: 0.95rem; line-height: 1.8; }
 .letter-body p { margin-bottom: 20px; }
-.signature-img { height: 50px; margin: 10px 0; mix-blend-mode: multiply; }
 
 /* Resume Section */
 .resume-summary { text-align: center; }
@@ -259,7 +257,7 @@ body {
 .timeline-details ul { margin: 0; padding-left: 20px; color: var(--text-gray); font-size: 0.9rem; line-height: 1.6; }
 
 /* =========================================
-   MOBILE RESPONSIVE OPTIMIZATIONS (FIXED)
+   MOBILE RESPONSIVE OPTIMIZATIONS
 ========================================= */
 
 @media (max-width: 1200px) {
@@ -327,7 +325,7 @@ body {
 }
 /* --- Clean PDF Print Settings --- */
 @media print {
-    .menu-toggle, .about-nav, .download-btn, .right-panel {
+    .menu-toggle, .about-nav, .download-btn, .right-panel, .sidebar-socials {
         display: none !important;
     }
     .main-content {
