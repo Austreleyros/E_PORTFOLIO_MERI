@@ -301,3 +301,17 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
+/* --- Clean PDF Print Settings --- */
+@media print {
+    .menu-toggle, .about-nav, .download-btn, .right-panel {
+        display: none !important;
+    }
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .sidebar {
+        position: absolute;
+        border-right: none;
+    }
+}
