@@ -219,7 +219,7 @@ body {
 }
 .letter-header { margin-bottom: 40px; color: var(--text-dark); font-size: 0.95rem; line-height: 1.6; }
 .letter-body { color: var(--text-gray); font-size: 0.95rem; line-height: 1.8; }
-.letter-body p { margin-bottom: 20px; text-indent: 2.5em; text-align: justify; hyphens: auto; }
+.letter-body p { margin-bottom: 20px; text-indent: 2.5em; text-align: justify; hyphens: none; }
 .letter-body p.no-indent { text-indent: 0; }
 
 /* Resume Section */
