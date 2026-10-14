@@ -425,19 +425,39 @@ body.lightbox-active { overflow: hidden; }
 /* Research Works */
 .research-list { display: flex; flex-direction: column; gap: 30px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px; }
 .research-item {
-    --handle-w: 46px;
+    --handle-w: 46px;     /* width of the red tab area */
+    --drawer-w: 58%;      /* how much of the row the photos take when open */
     position: relative;
     min-height: 240px;
     display: flex;
     align-items: center;
-    clip-path: inset(-30px 0 -30px -40px); /* hides the drawer while it's off to the right, keeps the timeline dot visible */
 }
-.research-info { position: relative; padding-right: calc(var(--handle-w) + 20px); }
+.research-info {
+    position: relative;
+    width: 100%;
+    padding-right: calc(var(--handle-w) + 20px);
+    transition: padding-right 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+/* When open, the title moves over to make room for the photos */
+.research-item.drawer-open .research-info { padding-right: calc(var(--drawer-w) + 24px); }
+/* While dragging, the title follows the drawer exactly */
+.research-item.drawer-dragging .research-info {
+    transition: none;
+    padding-right: calc(var(--handle-w) + 20px + (var(--drawer-w) - var(--handle-w) + 4px) * var(--open, 0));
+}
 .research-info::before {
     content: ''; position: absolute; left: -27px; top: 8px; width: 12px; height: 12px;
     background-color: var(--main-red); border-radius: 50%;
 }
 .research-item h4 { margin: 0; color: var(--text-dark); font-size: 1.2rem; line-height: 1.5; }
+
+/* The area the drawer slides within (anything past the right edge is hidden) */
+.research-stage {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(-20px 0 -20px -20px);
+    pointer-events: none;   /* the title underneath stays selectable */
+}
 
 /* The sliding drawer: only the red tab shows until it's pulled open */
 .research-drawer {
@@ -445,13 +465,12 @@ body.lightbox-active { overflow: hidden; }
     top: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
+    width: var(--drawer-w);
     display: flex;
-    background-color: var(--bg-white);
+    pointer-events: auto;
     transform: translateX(calc(100% - var(--handle-w)));
     transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
     will-change: transform;
-    z-index: 3;
 }
 .research-drawer.open { transform: translateX(0); }
 .research-drawer.dragging { transition: none; }
@@ -489,6 +508,33 @@ body.lightbox-active { overflow: hidden; }
 .drawer-handle:focus-visible .handle-tab { outline: 3px solid var(--text-dark); outline-offset: 2px; }
 
 .research-drawer .research-slider { flex: 1; height: 100%; min-width: 0; }
+
+/* Phones: title on top, photo drawer slides out in its own row underneath */
+@media (max-width: 600px) {
+    .research-item {
+        --handle-w: 40px;
+        --drawer-w: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        min-height: 0;
+        gap: 8px;
+    }
+    .research-info,
+    .research-item.drawer-open .research-info,
+    .research-item.drawer-dragging .research-info { padding-right: 0; }
+    .research-stage {
+        position: relative;
+        inset: auto;
+        height: 64px;   /* closed: just enough for the tab */
+        transition: height 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    .research-item.drawer-open .research-stage { height: 230px; }
+    .research-item.drawer-dragging .research-stage {
+        transition: none;
+        height: calc(64px + 166px * var(--open, 0));
+    }
+    .handle-tab { width: 32px; height: 56px; }
+}
 
 /* Photo slider (right side of each study) */
 .research-slider {
@@ -646,8 +692,6 @@ body.lightbox-active { overflow: hidden; }
     .research-list { margin-left: 10px; padding-left: 15px; }
     .research-info::before { left: -22px; width: 10px; height: 10px; }
     .research-item h4 { font-size: 1.05rem; }
-    .research-item { min-height: 220px; --handle-w: 40px; }
-    .handle-tab { width: 32px; height: 72px; }
     
     .right-panel { padding: 40px 20px; }
 }
