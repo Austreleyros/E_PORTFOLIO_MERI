@@ -266,12 +266,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Drag the red tab to the left: the photos come out with your finger and stay open.
     // Drag it back to the right (or tap the tab) to hide them again.
     document.querySelectorAll('.research-drawer').forEach(drawer => {
+        const item = drawer.closest('.research-item');
         const handle = drawer.querySelector('.drawer-handle');
         const panel = drawer.querySelector('.research-slider');
         const handleWidth = () => handle.offsetWidth;
         const travel = () => drawer.offsetWidth - handleWidth(); // how far the drawer moves
 
         const setOpen = (open) => {
+            item.classList.remove('drawer-dragging');
+            item.style.removeProperty('--open');
+            item.classList.toggle('drawer-open', open);
             drawer.classList.toggle('open', open);
             handle.setAttribute('aria-expanded', open);
             handle.setAttribute('aria-label', open ? 'Hide photos' : 'Show photos');
@@ -305,6 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 direction = Math.abs(moveX) > Math.abs(moveY) ? 'x' : 'y';
                 if (direction === 'x') {
                     drawer.classList.add('dragging');
+                    item.classList.add('drawer-dragging');
                     moved = true;
                 }
             }
@@ -314,6 +319,8 @@ document.addEventListener("DOMContentLoaded", () => {
             // The drawer follows the finger, but can't go past fully open or fully closed
             const pos = Math.max(0, Math.min(travel(), startPos + dx));
             drawer.style.transform = `translateX(${pos}px)`;
+            // 0 = closed, 1 = fully open: the title (or phone row) adjusts to match
+            item.style.setProperty('--open', (1 - pos / travel()).toFixed(3));
         });
 
         const endDrag = (e) => {
