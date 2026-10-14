@@ -262,6 +262,83 @@ document.addEventListener("DOMContentLoaded", () => {
         goTo(0);
     });
 
+    // 7b. Research photo drawers
+    // Drag the red tab to the left: the photos come out with your finger and stay open.
+    // Drag it back to the right (or tap the tab) to hide them again.
+    document.querySelectorAll('.research-drawer').forEach(drawer => {
+        const handle = drawer.querySelector('.drawer-handle');
+        const panel = drawer.querySelector('.research-slider');
+        const handleWidth = () => handle.offsetWidth;
+        const travel = () => drawer.offsetWidth - handleWidth(); // how far the drawer moves
+
+        const setOpen = (open) => {
+            drawer.classList.toggle('open', open);
+            handle.setAttribute('aria-expanded', open);
+            handle.setAttribute('aria-label', open ? 'Hide photos' : 'Show photos');
+            panel.inert = !open; // hidden photos can't be tabbed to
+            drawer.style.transform = ''; // let the CSS glide it to open/closed
+        };
+        setOpen(false);
+
+        let pointerId = null, startX = 0, startY = 0, dx = 0, startPos = 0;
+        let direction = null, moved = false;
+
+        handle.addEventListener('pointerdown', (e) => {
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            pointerId = e.pointerId;
+            startX = e.clientX;
+            startY = e.clientY;
+            dx = 0;
+            direction = null;
+            moved = false;
+            startPos = drawer.classList.contains('open') ? 0 : travel();
+            handle.setPointerCapture(e.pointerId); // keep following even if the finger leaves the tab
+        });
+
+        handle.addEventListener('pointermove', (e) => {
+            if (e.pointerId !== pointerId) return;
+            const moveX = e.clientX - startX;
+            const moveY = e.clientY - startY;
+
+            if (!direction) {
+                if (Math.abs(moveX) < 6 && Math.abs(moveY) < 6) return;
+                direction = Math.abs(moveX) > Math.abs(moveY) ? 'x' : 'y';
+                if (direction === 'x') {
+                    drawer.classList.add('dragging');
+                    moved = true;
+                }
+            }
+            if (direction !== 'x') return;
+
+            dx = moveX;
+            // The drawer follows the finger, but can't go past fully open or fully closed
+            const pos = Math.max(0, Math.min(travel(), startPos + dx));
+            drawer.style.transform = `translateX(${pos}px)`;
+        });
+
+        const endDrag = (e) => {
+            if (e.pointerId !== pointerId) return;
+            pointerId = null;
+            if (direction !== 'x') return;
+            drawer.classList.remove('dragging');
+            const pos = Math.max(0, Math.min(travel(), startPos + dx));
+            let open;
+            if (dx < -40) open = true;          // a clear swipe left opens
+            else if (dx > 40) open = false;     // a clear swipe right closes
+            else open = pos < travel() / 2;     // otherwise, whichever side is closer
+            setOpen(open);
+            direction = null;
+        };
+        handle.addEventListener('pointerup', endDrag);
+        handle.addEventListener('pointercancel', endDrag);
+
+        // A simple tap/click (or Enter key) toggles it
+        handle.addEventListener('click', () => {
+            if (moved) { moved = false; return; }
+            setOpen(!drawer.classList.contains('open'));
+        });
+    });
+
     // 8. Smooth scrolling for the menu links
     // (animated by the script, so it stays smooth even if the computer has animations turned off)
     let scrollAnim = null;
