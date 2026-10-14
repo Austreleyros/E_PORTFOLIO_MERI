@@ -423,25 +423,78 @@ body.lightbox-active { overflow: hidden; }
 }
 
 /* Research Works */
-.research-list { display: flex; flex-direction: column; gap: 45px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px; }
+.research-list { display: flex; flex-direction: column; gap: 30px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px; }
 .research-item {
+    --handle-w: 46px;
     position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
-    gap: 30px;
+    min-height: 240px;
+    display: flex;
     align-items: center;
+    clip-path: inset(-30px 0 -30px -40px); /* hides the drawer while it's off to the right, keeps the timeline dot visible */
 }
-.research-info { position: relative; }
+.research-info { position: relative; padding-right: calc(var(--handle-w) + 20px); }
 .research-info::before {
     content: ''; position: absolute; left: -27px; top: 8px; width: 12px; height: 12px;
     background-color: var(--main-red); border-radius: 50%;
 }
 .research-item h4 { margin: 0; color: var(--text-dark); font-size: 1.2rem; line-height: 1.5; }
 
+/* The sliding drawer: only the red tab shows until it's pulled open */
+.research-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    background-color: var(--bg-white);
+    transform: translateX(calc(100% - var(--handle-w)));
+    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    will-change: transform;
+    z-index: 3;
+}
+.research-drawer.open { transform: translateX(0); }
+.research-drawer.dragging { transition: none; }
+
+.drawer-handle {
+    flex: 0 0 var(--handle-w);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: grab;
+    touch-action: pan-y;       /* page still scrolls up/down on phones */
+    -webkit-tap-highlight-color: transparent;
+}
+.research-drawer.dragging .drawer-handle { cursor: grabbing; }
+.handle-tab {
+    width: 38px;
+    height: 84px;
+    border-radius: 10px;
+    background-color: var(--main-red);
+    color: var(--bg-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(217, 32, 39, 0.3);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.handle-tab svg { width: 22px; height: 22px; transition: transform 0.4s ease; }
+.research-drawer.open .handle-tab svg { transform: rotate(180deg); } /* < becomes > when open */
+.drawer-handle:hover .handle-tab { background-color: #b81b21; }
+.research-drawer:not(.open) .drawer-handle:hover .handle-tab { transform: translateX(-4px); } /* little nudge hint */
+.drawer-handle:focus { outline: none; }
+.drawer-handle:focus-visible .handle-tab { outline: 3px solid var(--text-dark); outline-offset: 2px; }
+
+.research-drawer .research-slider { flex: 1; height: 100%; min-width: 0; }
+
 /* Photo slider (right side of each study) */
 .research-slider {
     position: relative;
     height: 280px;
+    user-select: none;
     border: 1px solid var(--light-pink);
     border-radius: 8px;
     background-color: var(--sidebar-bg);
@@ -539,10 +592,6 @@ body.lightbox-active { overflow: hidden; }
 .research-slider.is-single .slider-btn,
 .research-slider.is-single .slider-counter { display: none; }
 
-@media (max-width: 1000px) {
-    .research-item { grid-template-columns: 1fr; gap: 15px; }
-}
-
 /* =========================================
    MOBILE RESPONSIVE OPTIMIZATIONS
 ========================================= */
@@ -597,7 +646,8 @@ body.lightbox-active { overflow: hidden; }
     .research-list { margin-left: 10px; padding-left: 15px; }
     .research-info::before { left: -22px; width: 10px; height: 10px; }
     .research-item h4 { font-size: 1.05rem; }
-    .research-slider { height: 240px; }
+    .research-item { min-height: 220px; --handle-w: 40px; }
+    .handle-tab { width: 32px; height: 72px; }
     
     .right-panel { padding: 40px 20px; }
 }
@@ -615,7 +665,7 @@ body.lightbox-active { overflow: hidden; }
 }
 /* --- Clean PDF Print Settings --- */
 @media print {
-    .menu-toggle, .about-nav, .download-btn, .right-panel, .sidebar-socials, .flip-instructions, .flip-hint, .view-full-btn, .lightbox, .slider-btn, .slider-counter {
+    .menu-toggle, .about-nav, .download-btn, .right-panel, .sidebar-socials, .flip-instructions, .flip-hint, .view-full-btn, .lightbox, .slider-btn, .slider-counter, .research-drawer {
         display: none !important;
     }
     .main-content {
