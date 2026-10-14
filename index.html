@@ -321,14 +321,20 @@
                  To add more photos to a study, copy one <div class="slide"> line and change the number (e.g. poverty-4.jpg). -->
             <section id="research-works" class="content-section">
                 <h2 class="section-title">Research Works</h2>
-                <p class="flip-instructions">Swipe the photos to see more. Tap a photo to view it full size.</p>
+                <p class="flip-instructions">Slide the red tab to the left to see the photos. Slide it back to hide them.</p>
                 <div class="research-list">
 
                     <article class="research-item">
                         <div class="research-info">
                             <h4>Women in Poverty: Exploring the Challenges Faced by Single Mothers in Butuan City</h4>
                         </div>
-                        <div class="research-slider">
+                        <div class="research-drawer">
+                            <button type="button" class="drawer-handle" aria-expanded="false" aria-label="Show photos">
+                                <span class="handle-tab">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </span>
+                            </button>
+                            <div class="research-slider">
                             <div class="slider-track">
                                 <div class="slide"><img src="research/poverty-1.jpg" alt="Women in Poverty research photo 1" draggable="false"></div>
                                 <div class="slide"><img src="research/poverty-2.jpg" alt="Women in Poverty research photo 2" draggable="false"></div>
@@ -342,6 +348,7 @@
                             </button>
                             <div class="slider-counter"></div>
                             <p class="slider-empty">Photos coming soon</p>
+                            </div>
                         </div>
                     </article>
 
@@ -349,7 +356,13 @@
                         <div class="research-info">
                             <h4>Kwentong Baha: A Community-Based Assessment of Flood Experiences in Pangabugan, Butuan City</h4>
                         </div>
-                        <div class="research-slider">
+                        <div class="research-drawer">
+                            <button type="button" class="drawer-handle" aria-expanded="false" aria-label="Show photos">
+                                <span class="handle-tab">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                                </span>
+                            </button>
+                            <div class="research-slider">
                             <div class="slider-track">
                                 <div class="slide"><img src="research/baha-1.jpg" alt="Kwentong Baha research photo 1" draggable="false"></div>
                                 <div class="slide"><img src="research/baha-2.jpg" alt="Kwentong Baha research photo 2" draggable="false"></div>
@@ -363,6 +376,7 @@
                             </button>
                             <div class="slider-counter"></div>
                             <p class="slider-empty">Photos coming soon</p>
+                            </div>
                         </div>
                     </article>
 
