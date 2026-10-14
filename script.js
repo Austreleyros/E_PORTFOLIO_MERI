@@ -146,8 +146,9 @@ document.addEventListener("DOMContentLoaded", () => {
         img.addEventListener('error', markMissing);
         if (img.complete && img.naturalWidth === 0) markMissing();
     });
-
-    // 7. Research Works photo sliders (swipe on phones, drag or arrows on laptops)
+    // 7. Research Works photo sliders
+    // Drag with your finger or mouse: the photo moves with you, then glides into place.
+    // The arrow buttons glide to the previous/next photo.
     document.querySelectorAll('.research-slider').forEach(slider => {
         const track = slider.querySelector('.slider-track');
         const prevBtn = slider.querySelector('.slider-btn.prev');
@@ -155,73 +156,93 @@ document.addEventListener("DOMContentLoaded", () => {
         const counter = slider.querySelector('.slider-counter');
         const title = slider.closest('.research-item').querySelector('h4').textContent;
 
+        let index = 0;
         const visibleSlides = () => [...track.querySelectorAll('.slide')].filter(s => !s.classList.contains('missing'));
-        const currentIndex = () => track.clientWidth ? Math.round(track.scrollLeft / track.clientWidth) : 0;
 
         const update = () => {
             const total = visibleSlides().length;
-            const i = Math.min(currentIndex(), Math.max(total - 1, 0));
+            index = Math.max(0, Math.min(index, total - 1));
             slider.classList.toggle('is-empty', total === 0);
             slider.classList.toggle('is-single', total === 1);
-            counter.textContent = total ? `${i + 1} / ${total}` : '';
-            prevBtn.disabled = i <= 0;
-            nextBtn.disabled = i >= total - 1;
+            counter.textContent = total ? `${index + 1} / ${total}` : '';
+            prevBtn.disabled = index <= 0;
+            nextBtn.disabled = index >= total - 1;
+        };
+
+        // Move the strip of photos (offsetPx is how far the finger has dragged)
+        const setPosition = (offsetPx = 0) => {
+            track.style.transform = `translateX(calc(${-index * 100}% + ${offsetPx}px))`;
         };
 
         const goTo = (i) => {
-            const total = visibleSlides().length;
-            const target = Math.max(0, Math.min(i, total - 1));
-            track.scrollTo({ left: target * track.clientWidth, behavior: 'smooth' });
+            index = i;
+            update();
+            setPosition(0); // CSS transition makes this glide smoothly
         };
 
-        prevBtn.addEventListener('click', () => goTo(currentIndex() - 1));
-        nextBtn.addEventListener('click', () => goTo(currentIndex() + 1));
-        track.addEventListener('scroll', update, { passive: true });
-        window.addEventListener('resize', update);
+        prevBtn.addEventListener('click', () => goTo(index - 1));
+        nextBtn.addEventListener('click', () => goTo(index + 1));
 
-        // Hide any photo that hasn't been uploaded yet
+        // Skip any photo that hasn't been uploaded yet
         track.querySelectorAll('img').forEach(img => {
             const markMissing = () => {
                 img.closest('.slide').classList.add('missing');
-                update();
+                goTo(index);
             };
             img.addEventListener('error', markMissing);
             if (img.complete && img.naturalWidth === 0) markMissing();
         });
 
-        // Mouse drag: the photo follows the mouse, then snaps to the nearest photo
-        // (phones and touchpads already swipe naturally)
-        let dragging = false, moved = false, startX = 0, startScroll = 0;
+        // ---- Dragging (works for touch, pen, and mouse) ----
+        let pointerId = null, startX = 0, startY = 0, dx = 0;
+        let direction = null; // 'x' = sliding photos, 'y' = scrolling the page
+        let moved = false;
 
         track.addEventListener('pointerdown', (e) => {
-            if (e.pointerType !== 'mouse' || e.button !== 0) return;
-            dragging = true;
-            moved = false;
+            if (e.pointerType === 'mouse' && e.button !== 0) return;
+            pointerId = e.pointerId;
             startX = e.clientX;
-            startScroll = track.scrollLeft;
-            track.classList.add('dragging');
-            track.setPointerCapture(e.pointerId);
+            startY = e.clientY;
+            dx = 0;
+            direction = null;
+            moved = false;
         });
 
         track.addEventListener('pointermove', (e) => {
-            if (!dragging) return;
-            const dx = e.clientX - startX;
-            if (Math.abs(dx) > 5) moved = true;
-            track.scrollLeft = startScroll - dx;
+            if (e.pointerId !== pointerId) return;
+            const moveX = e.clientX - startX;
+            const moveY = e.clientY - startY;
+
+            // Decide once whether this is a sideways slide or an up/down page scroll
+            if (!direction) {
+                if (Math.abs(moveX) < 6 && Math.abs(moveY) < 6) return;
+                direction = Math.abs(moveX) > Math.abs(moveY) ? 'x' : 'y';
+                if (direction === 'x') {
+                    track.setPointerCapture(e.pointerId);
+                    track.classList.add('dragging');
+                    moved = true;
+                }
+            }
+            if (direction !== 'x') return;
+
+            dx = moveX;
+            const total = visibleSlides().length;
+            // Gentle stretch at the first/last photo instead of a hard stop
+            if ((index === 0 && dx > 0) || (index >= total - 1 && dx < 0)) dx *= 0.35;
+            setPosition(dx);
         });
 
-        const endDrag = () => {
-            if (!dragging) return;
-            dragging = false;
-            const width = track.clientWidth || 1;
-            const startIndex = Math.round(startScroll / width);
-            const pulled = (track.scrollLeft - startScroll) / width;
-            // A short pull (20% of the width) is enough to move to the next photo
-            let target = startIndex;
-            if (pulled > 0.2) target = startIndex + 1;
-            if (pulled < -0.2) target = startIndex - 1;
-            goTo(target);
-            setTimeout(() => track.classList.remove('dragging'), 450);
+        const endDrag = (e) => {
+            if (e.pointerId !== pointerId) return;
+            pointerId = null;
+            if (direction !== 'x') return;
+            track.classList.remove('dragging');
+            const width = slider.clientWidth || 1;
+            // Drag past 15% of the width to change photo
+            if (dx < -width * 0.15) goTo(index + 1);
+            else if (dx > width * 0.15) goTo(index - 1);
+            else goTo(index); // not far enough: glide back
+            direction = null;
         };
         track.addEventListener('pointerup', endDrag);
         track.addEventListener('pointercancel', endDrag);
@@ -230,12 +251,69 @@ document.addEventListener("DOMContentLoaded", () => {
         track.addEventListener('click', () => {
             if (moved) { moved = false; return; }
             const slides = visibleSlides();
-            const i = Math.min(currentIndex(), slides.length - 1);
-            const img = slides[i] && slides[i].querySelector('img');
+            const img = slides[index] && slides[index].querySelector('img');
             if (!img) return;
-            openLightbox(img.currentSrc || img.src, img.alt, `${title} • Photo ${i + 1} of ${slides.length}`);
+            openLightbox(img.currentSrc || img.src, img.alt, `${title} • Photo ${index + 1} of ${slides.length}`);
         });
 
-        update();
+        // Prevent the browser's own image dragging
+        track.addEventListener('dragstart', (e) => e.preventDefault());
+
+        goTo(0);
+    });
+
+    // 8. Smooth scrolling for the menu links
+    // (animated by the script, so it stays smooth even if the computer has animations turned off)
+    let scrollAnim = null;
+    const rootStyle = document.documentElement.style;
+    const easeInOutCubic = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    const stopScrollAnim = () => {
+        cancelAnimationFrame(scrollAnim);
+        rootStyle.scrollBehavior = '';
+    };
+
+    const smoothScrollTo = (targetY) => {
+        stopScrollAnim();
+        const startY = window.scrollY;
+        const distance = targetY - startY;
+        const duration = Math.min(1100, Math.max(500, Math.abs(distance) * 0.5)); // longer trips take a bit longer
+        let startTime = null;
+        rootStyle.scrollBehavior = 'auto'; // let the script control every frame
+
+        const step = (now) => {
+            if (startTime === null) startTime = now;
+            const progress = Math.min((now - startTime) / duration, 1);
+            window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+            if (progress < 1) {
+                scrollAnim = requestAnimationFrame(step);
+            } else {
+                rootStyle.scrollBehavior = '';
+            }
+        };
+        scrollAnim = requestAnimationFrame(step);
+    };
+
+    // If the visitor starts scrolling on their own, stop the animation
+    ['wheel', 'touchstart', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, stopScrollAnim, { passive: true });
+    });
+
+    // Position of a section on the page (ignores the fade-in animation offset)
+    const pageTop = (el) => {
+        let y = 0;
+        while (el) { y += el.offsetTop; el = el.offsetParent; }
+        return y;
+    };
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const id = link.getAttribute('href');
+            const target = document.querySelector(id);
+            if (!target) return;
+            e.preventDefault();
+            smoothScrollTo(pageTop(target));
+            history.pushState(null, '', id);
+        });
     });
 });
