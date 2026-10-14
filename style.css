@@ -426,30 +426,47 @@ body.lightbox-active { overflow: hidden; }
 .research-list { display: flex; flex-direction: column; gap: 30px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px; }
 .research-item {
     --handle-w: 46px;     /* width of the red tab area */
-    --drawer-w: 58%;      /* how much of the row the photos take when open */
+    --drawer-w: 58cqw;    /* how much of the row the photos take when open */
+    /* how far the title sits to the right while the photos are hidden */
+    --shift: calc((var(--drawer-w) + 4px - var(--handle-w)) / 2);
+    --glide: 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    container-type: inline-size;
     position: relative;
     min-height: 240px;
     display: flex;
     align-items: center;
 }
+
+/* The title keeps the same line breaks and simply glides sideways (no jumpy rewrapping) */
 .research-info {
     position: relative;
-    width: 100%;
-    padding-right: calc(var(--handle-w) + 20px);
-    transition: padding-right 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    flex: none;
+    width: calc(100cqw - var(--drawer-w) - 24px);
+    transform: translateX(var(--shift));
+    transition: transform var(--glide);
+    will-change: transform;
 }
-/* When open, the title moves over to make room for the photos */
 .research-item.drawer-open .research-info,
-.research-item:has(.research-drawer.open) .research-info { padding-right: calc(var(--drawer-w) + 24px); }
-/* While dragging, the title follows the drawer exactly */
+.research-item:has(.research-drawer.open) .research-info { transform: translateX(0); }
 .research-item.drawer-dragging .research-info {
     transition: none;
-    padding-right: calc(var(--handle-w) + 20px + (var(--drawer-w) - var(--handle-w) + 4px) * var(--open, 0));
+    transform: translateX(calc(var(--shift) * (1 - var(--open, 0))));
 }
+
+/* Timeline dot: moves opposite to the title so it stays put on the line */
 .research-info::before {
     content: ''; position: absolute; left: -27px; top: 8px; width: 12px; height: 12px;
     background-color: var(--main-red); border-radius: 50%;
+    transform: translateX(calc(-1 * var(--shift)));
+    transition: transform var(--glide);
 }
+.research-item.drawer-open .research-info::before,
+.research-item:has(.research-drawer.open) .research-info::before { transform: translateX(0); }
+.research-item.drawer-dragging .research-info::before {
+    transition: none;
+    transform: translateX(calc(-1 * var(--shift) * (1 - var(--open, 0))));
+}
+
 .research-item h4 { margin: 0; color: var(--text-dark); font-size: 1.2rem; line-height: 1.5; }
 
 /* The area the drawer slides within (anything past the right edge is hidden) */
@@ -470,7 +487,7 @@ body.lightbox-active { overflow: hidden; }
     display: flex;
     pointer-events: auto;
     transform: translateX(calc(100% - var(--handle-w)));
-    transition: transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition: transform var(--glide);
     will-change: transform;
 }
 .research-drawer.open { transform: translateX(0); }
@@ -515,20 +532,18 @@ body.lightbox-active { overflow: hidden; }
     .research-item {
         --handle-w: 40px;
         --drawer-w: 100%;
+        --shift: 0px;
         flex-direction: column;
         align-items: stretch;
         min-height: 0;
         gap: 8px;
     }
-    .research-info,
-    .research-item.drawer-open .research-info,
-    .research-item:has(.research-drawer.open) .research-info,
-    .research-item.drawer-dragging .research-info { padding-right: 0; }
+    .research-info { width: 100%; }
     .research-stage {
         position: relative;
         inset: auto;
         height: 64px;   /* closed: just enough for the tab */
-        transition: height 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+        transition: height var(--glide);
     }
     .research-item.drawer-open .research-stage,
     .research-item:has(.research-drawer.open) .research-stage { height: 230px; }
