@@ -450,19 +450,19 @@ body.lightbox-active { overflow: hidden; }
 .slider-track {
     display: flex;
     height: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
+    transform: translateX(0);
+    transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1); /* the smooth glide */
+    will-change: transform;
+    touch-action: pan-y;      /* page still scrolls up/down; sideways swipes move the photos */
     cursor: grab;
-    touch-action: pan-x pan-y;
+    user-select: none;
+    -webkit-user-select: none;
 }
-.slider-track::-webkit-scrollbar { display: none; }
-.slider-track.dragging { scroll-snap-type: none; cursor: grabbing; }
+.slider-track.dragging { transition: none; cursor: grabbing; } /* photo follows your finger exactly */
 
 .slide {
     flex: 0 0 100%;
     height: 100%;
-    scroll-snap-align: start;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -484,6 +484,7 @@ body.lightbox-active { overflow: hidden; }
 
 .slider-btn {
     position: absolute;
+    z-index: 2;
     top: 50%;
     transform: translateY(-50%);
     width: 36px;
@@ -504,11 +505,12 @@ body.lightbox-active { overflow: hidden; }
 .slider-btn.prev { left: 10px; }
 .slider-btn.next { right: 10px; }
 .slider-btn:hover { background-color: #b81b21; }
-.slider-btn:disabled { opacity: 0; pointer-events: none; }
+.slider-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
 .slider-btn:focus-visible { outline: 3px solid var(--text-dark); outline-offset: 2px; }
 
 .slider-counter {
     position: absolute;
+    z-index: 2;
     bottom: 10px;
     right: 10px;
     background-color: rgba(255, 255, 255, 0.9);
