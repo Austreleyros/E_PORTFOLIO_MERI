@@ -234,28 +234,312 @@ body {
 }
 .download-btn:hover { background-color: #b81b21; transform: translateY(-3px); }
 
-/* Achievements Grid */
-.achievements-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
-.achievement-card {
-    background: var(--sidebar-bg); border: 1px solid var(--light-pink); border-radius: 8px;
-    padding: 30px 20px; text-align: center; transition: transform 0.3s ease;
+/* =========================================
+   TRAININGS & SEMINARS — FLIP CARDS
+   Front = seminar details, Back = photo proof
+========================================= */
+.flip-instructions {
+    text-align: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin: -25px 0 30px;
 }
-.achievement-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255, 182, 193, 0.2); }
-.achievement-icon { font-size: 3rem; margin-bottom: 15px; }
-.achievement-card h3 { margin: 0 0 10px 0; color: var(--main-red); font-size: 1.1rem; }
-.achievement-card p { margin: 0; color: var(--text-gray); font-size: 0.9rem; line-height: 1.5; }
 
-/* Experience Timeline */
-.timeline-list { display: flex; flex-direction: column; gap: 30px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px;}
-.timeline-item { position: relative; }
-.timeline-item::before {
-    content: ''; position: absolute; left: -27px; top: 0; width: 12px; height: 12px;
+.achievements-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+
+/* The outer card: holds the 3D "camera" */
+.achievement-card {
+    perspective: 1000px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.achievement-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(255, 182, 193, 0.3); }
+.achievement-card:focus { outline: none; }
+.achievement-card:focus-visible { outline: 3px solid var(--main-red); outline-offset: 3px; }
+
+/* The part that actually rotates. Both faces sit in the same grid cell,
+   so the card is as tall as whichever side needs more room. */
+.flip-card-inner {
+    display: grid;
+    height: 100%;
+    min-height: 250px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.achievement-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+
+.flip-card-front,
+.flip-card-back {
+    grid-area: 1 / 1;
+    border-radius: 8px;
+    border: 1px solid var(--light-pink);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Front side (same look as your original cards) */
+.flip-card-front {
+    background: var(--sidebar-bg);
+    padding: 30px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotateY(0deg); /* helps Safari hide the back face properly */
+}
+.achievement-icon { font-size: 3rem; margin-bottom: 15px; }
+.flip-card-front h3 { margin: 0 0 10px 0; color: var(--main-red); font-size: 1.1rem; }
+.flip-card-front p { margin: 0; color: var(--text-gray); font-size: 0.9rem; line-height: 1.5; }
+.flip-hint {
+    margin-top: 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--main-red);
+    border-bottom: 1px dashed var(--light-pink);
+    padding-bottom: 2px;
+}
+
+/* Back side (the photo) */
+.flip-card-back {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-white);
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.flip-card-back img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* change to "contain" if you're showing certificates and don't want them cropped */
+    display: block;
+}
+
+/* Shown automatically if the photo file is missing */
+.no-photo-text { display: none; color: var(--text-gray); font-size: 0.9rem; padding: 20px; text-align: center; }
+.flip-card-back.no-photo img { display: none; }
+.flip-card-back.no-photo .no-photo-text { display: block; }
+
+/* "View full size" button — appears on the photo side after flipping */
+.view-full-btn {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    background-color: var(--main-red);
+    color: var(--bg-white);
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease 0.3s, background-color 0.2s ease;
+}
+.achievement-card.flipped .view-full-btn { opacity: 1; }
+.view-full-btn:hover { background-color: #b81b21; }
+.view-full-btn:focus-visible { outline: 3px solid var(--bg-white); outline-offset: 2px; }
+.flip-card-back.no-photo .view-full-btn { display: none; }
+
+/* Full-size photo viewer */
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background-color: rgba(30, 10, 14, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 70px 20px 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.lightbox.open { opacity: 1; visibility: visible; }
+
+.lightbox-figure {
+    margin: 0;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.lightbox-img {
+    display: block;
+    max-width: 100%;
+    max-height: calc(100vh - 150px);
+    max-height: calc(100dvh - 150px);
+    width: auto;
+    height: auto;
+    object-fit: contain;   /* shows the WHOLE photo, whatever its size or shape */
+    border-radius: 4px;
+    border: 3px solid var(--light-pink);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+.lightbox-caption {
+    color: var(--bg-white);
+    margin-top: 14px;
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+.lightbox-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--main-red);
+    color: var(--bg-white);
+    font-size: 1.8rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.lightbox-close:hover { background-color: #b81b21; transform: scale(1.08); }
+.lightbox-close:focus-visible { outline: 3px solid var(--bg-white); outline-offset: 2px; }
+
+body.lightbox-active { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+    .flip-card-inner, .lightbox, .view-full-btn { transition: none; }
+}
+
+/* Research Works */
+.research-list { display: flex; flex-direction: column; gap: 45px; border-left: 2px solid var(--light-pink); padding-left: 20px; margin-left: 20px; }
+.research-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: 30px;
+    align-items: center;
+}
+.research-info { position: relative; }
+.research-info::before {
+    content: ''; position: absolute; left: -27px; top: 8px; width: 12px; height: 12px;
     background-color: var(--main-red); border-radius: 50%;
 }
-.timeline-year { font-weight: 600; color: var(--main-red); font-size: 0.95rem; margin-bottom: 5px; }
-.timeline-details h4 { margin: 0 0 5px 0; color: var(--text-dark); font-size: 1.2rem; }
-.timeline-details p { margin: 0 0 10px 0; color: var(--text-gray); font-style: italic; }
-.timeline-details ul { margin: 0; padding-left: 20px; color: var(--text-gray); font-size: 0.9rem; line-height: 1.6; }
+.research-item h4 { margin: 0; color: var(--text-dark); font-size: 1.2rem; line-height: 1.5; }
+
+/* Photo slider (right side of each study) */
+.research-slider {
+    position: relative;
+    height: 280px;
+    border: 1px solid var(--light-pink);
+    border-radius: 8px;
+    background-color: var(--sidebar-bg);
+    overflow: hidden;
+}
+.slider-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-x pan-y;
+}
+.slider-track::-webkit-scrollbar { display: none; }
+.slider-track.dragging { scroll-snap-type: none; cursor: grabbing; }
+
+.slide {
+    flex: 0 0 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+.slide.missing { display: none; }
+.slide img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;   /* whole photo, real shape, no cropping */
+    border-radius: 4px;
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;  /* lets the swipe/drag work smoothly */
+}
+
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--main-red);
+    color: var(--bg-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+.slider-btn svg { width: 100%; height: 100%; }
+.slider-btn.prev { left: 10px; }
+.slider-btn.next { right: 10px; }
+.slider-btn:hover { background-color: #b81b21; }
+.slider-btn:disabled { opacity: 0; pointer-events: none; }
+.slider-btn:focus-visible { outline: 3px solid var(--text-dark); outline-offset: 2px; }
+
+.slider-counter {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--main-red);
+    border: 1px solid var(--light-pink);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+.slider-empty { display: none; }
+.research-slider.is-empty .slider-empty {
+    display: flex;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+}
+.research-slider.is-empty .slider-btn,
+.research-slider.is-empty .slider-counter,
+.research-slider.is-single .slider-btn,
+.research-slider.is-single .slider-counter { display: none; }
+
+@media (max-width: 1000px) {
+    .research-item { grid-template-columns: 1fr; gap: 15px; }
+}
 
 /* =========================================
    MOBILE RESPONSIVE OPTIMIZATIONS
@@ -305,10 +589,13 @@ body {
     .about-image { width: 90%; }
     .letter-container { padding: 20px; box-shadow: 0 5px 15px rgba(255, 182, 193, 0.1); }
     .education-block { padding: 20px; }
-    .achievement-card { padding: 20px 15px; }
+    .flip-card-front { padding: 20px 15px; }
+    .flip-instructions { margin-top: -10px; }
     
-    .timeline-list { margin-left: 10px; padding-left: 15px; }
-    .timeline-item::before { left: -22px; width: 10px; height: 10px; }
+    .research-list { margin-left: 10px; padding-left: 15px; }
+    .research-info::before { left: -22px; width: 10px; height: 10px; }
+    .research-item h4 { font-size: 1.05rem; }
+    .research-slider { height: 240px; }
     
     .right-panel { padding: 40px 20px; }
 }
@@ -326,7 +613,7 @@ body {
 }
 /* --- Clean PDF Print Settings --- */
 @media print {
-    .menu-toggle, .about-nav, .download-btn, .right-panel, .sidebar-socials {
+    .menu-toggle, .about-nav, .download-btn, .right-panel, .sidebar-socials, .flip-instructions, .flip-hint, .view-full-btn, .lightbox, .slider-btn, .slider-counter {
         display: none !important;
     }
     .main-content {
